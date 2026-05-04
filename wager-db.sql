@@ -6,12 +6,12 @@ CREATE TABLE "bets"(
 "discord_user_id_a" INTEGER,
 "discord_user_id_b" INTEGER,
 "winner_discord_user_id" INT,
-"status" TEXT,
+"status" TEXT
 );
 
 CREATE TABLE "users"(
 "discord_user_id" INTEGER NOT NULL PRIMARY KEY,
 "balance" INTEGER,
 "wins" INTEGER,
-"losses" INTEGER,
+"losses" INTEGER
 );
