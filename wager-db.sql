@@ -11,6 +11,7 @@ CREATE TABLE "bets"(
 
 CREATE TABLE "users"(
 "discord_user_id" INTEGER NOT NULL PRIMARY KEY,
+"discord_user_name" TEXT,
 "balance" INTEGER,
 "wins" INTEGER,
 "losses" INTEGER

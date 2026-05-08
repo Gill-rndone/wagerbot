@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import sqlite3
 import os
 from dbinit import init_db
+import dbHelpers
 
 load_dotenv()
 
@@ -31,17 +32,10 @@ async def on_ready():
 
 
 # testing slash commands
-@tree.command(name="test_command")
-async def test_command(interaction, member: discord.Member | None, amount: str):
-    author = interaction.user.name
-    if not member:
-        await interaction.response.send_message(
-            f"Hello, {author}. this is a test! take {amount} bits."
-        )
-    else:
-        await interaction.response.send_message(
-            f"Hello, {author} and {member.name}. this is a test! take {amount} bits."
-        )
+@tree.command(name="wager")
+async def test_command(interaction, member: discord.Member, amount: str):
+    dbHelpers.profile_checker(con, cur, interaction.user.id, interaction.user.name)
+    dbHelpers.profile_checker(con, cur, member.id, member.name)
 
 
 # testing int math with commands
