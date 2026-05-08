@@ -34,6 +34,7 @@ async def on_ready():
 # testing slash commands
 @tree.command(name="wager")
 async def test_command(interaction, member: discord.Member, amount: str):
+    # Check for existing user profiles and create ones where needed.
     dbHelpers.profile_checker(con, cur, interaction.user.id, interaction.user.name)
     dbHelpers.profile_checker(con, cur, member.id, member.name)
 
