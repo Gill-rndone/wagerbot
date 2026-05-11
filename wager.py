@@ -64,16 +64,4 @@ async def wager(interaction, member: discord.Member, amount: str):
         await interaction.response.send_message(f"Wager couldn't be processed, at least one of the users either have an insufficient balance or they're currently in a pending wager.")
 
 
-
-
-
-# testing int math with commands
-@tree.command(name="calculator")
-async def calculator(interaction, amount_a: int, amount_b: int):
-    result = amount_a + amount_b
-    await interaction.response.send_message(
-        f"{interaction.user.name} just asked what {amount_b} + {amount_a} is...\n it's {result} btw."
-    )
-
-
 client.run(token, log_handler=handler, log_level=logging.DEBUG)
