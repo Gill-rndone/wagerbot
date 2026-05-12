@@ -42,7 +42,7 @@ def profile_checker(con, cur, user_id, user_name):
 def wager_open(con, cur, user_a, user_b, amount, server_id):
     default_status = "Pending"
     cur.execute(
-        "INSERT INTO bets (discord_user_id_a, discord_user_id_b, amount, discord_server_id, status) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO wagers (discord_user_id_a, discord_user_id_b, amount, discord_server_id, status) VALUES (?, ?, ?, ?, ?)",
         (
             user_a,
             user_b,
@@ -54,17 +54,46 @@ def wager_open(con, cur, user_a, user_b, amount, server_id):
     con.commit()
 
 
-def bet_circumstance(con, cur, user_id_a, user_id_b, amount):
-    # check if either user has a pending wager
-    validity = True
+def check_pending(con, cur, user_id):
+    is_pending = False
     pending_bets = cur.execute(
-        "SELECT status FROM bets WHERE discord_user_id_a IN (?, ?) OR discord_user_id_b IN (?, ?)",
-        (user_id_a, user_id_b, user_id_a, user_id_b),
+        "SELECT status FROM wagers WHERE discord_user_id_a = ? OR discord_user_id_b = ?",
+        (
+            user_id,
+            user_id,
+        ),
     )
 
     for status in pending_bets:
         if status[0] == "Pending":
-            validity = False
+            is_pending = True
+
+    return is_pending
+
+
+def check_ongoing(con, cur, user_id):
+    is_ongoing = False
+    ongoing_bets = cur.execute(
+        "SELECT status FROM wagers WHERE discord_user_id_a = ? OR discord_user_id_b = ?",
+        (
+            user_id,
+            user_id,
+        ),
+    )
+
+    for status in ongoing_bets:
+        if status[0] == "Ongoing":
+            is_ongoing = True
+
+
+def bet_circumstance(con, cur, user_id_a, user_id_b, amount):
+    # check if either user has a pending wager
+    validity = True
+
+    if check_pending(con, cur, user_id_a) or check_ongoing(con, cur, user_id_a):
+        validity = False
+    if check_pending(con, cur, user_id_b) or check_ongoing(con, cur, user_id_b):
+        validity = False
 
     balances = cur.execute(
         "SELECT balance FROM users WHERE discord_user_id IN (?, ?)",

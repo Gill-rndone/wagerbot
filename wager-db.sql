@@ -1,4 +1,4 @@
-CREATE TABLE "bets"(
+CREATE TABLE "wagers"(
 "id" INTEGER UNIQUE NOT NULL PRIMARY KEY,
 "discord_server_id" INTEGER,
 "amount" INTEGER,
