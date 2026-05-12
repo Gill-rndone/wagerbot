@@ -64,11 +64,12 @@ async def wager(interaction, member: discord.Member, amount: str):
 
     # initialize wager
     if valid_circumstance == True:
+        # user 'a' will always be instigator (instigator cannot use /accept command)
         dbHelpers.wager_open(
             con, cur, interaction.user.id, member.id, int(amount), interaction.guild.id
         )
         await interaction.response.send_message(
-            f"@{member.name} , a wager of {amount} wager points has been offered to you... \n\nYour options are:\n `/decline` or `/accept` to reject or continue the wager.\n`/raise` (amount) to raise your wager by the input ammount.\n `/lower` (amount) to lower the wager by the input ammount (minimum must be greater than 0)"
+            f"{member.mention} , a wager of {amount} wager points has been offered to you... \n\nYour options are:\n `/decline` or `/accept` to reject or continue the wager.\n`/raise` (amount) to raise your wager by the input ammount.\n `/lower` (amount) to lower the wager by the input ammount (minimum must be greater than 0)"
         )
     else:
         await interaction.response.send_message(
@@ -85,10 +86,11 @@ async def accept(interaction):
 
     if currently_pending == True:
         # TODO: change status to ongoing
-        await interaction.response.send_message("code code..")
+        wager_info = dbHelpers.wager_accept(con, cur, interaction.user.id)
+        await interaction.response.send_message(f"<@{wager_info["Name"]}>, Your wager of {wager_info["Amount"]} wager points has been accepted")
     else:
         await interaction.response.send_message(
-            f"@{user_name} , you currently don't have any pending wagers"
+            f"{interaction.user.mention} , you currently don't have any pending wagers offered to you"
         )
 
 

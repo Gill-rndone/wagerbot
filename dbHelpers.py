@@ -54,14 +54,11 @@ def wager_open(con, cur, user_a, user_b, amount, server_id):
     con.commit()
 
 
+# check if user has a pending bet OR if they've started the bet that they have pending
 def check_pending(con, cur, user_id):
     is_pending = False
     pending_bets = cur.execute(
-        "SELECT status FROM wagers WHERE discord_user_id_a = ? OR discord_user_id_b = ?",
-        (
-            user_id,
-            user_id,
-        ),
+        "SELECT status FROM wagers WHERE discord_user_id_b = ?", (user_id,)
     )
 
     for status in pending_bets:
@@ -84,6 +81,32 @@ def check_ongoing(con, cur, user_id):
     for status in ongoing_bets:
         if status[0] == "Ongoing":
             is_ongoing = True
+
+
+def wager_accept(con, cur, user_id):
+
+    # Grab info for the wager
+    user_id_b = 0
+    wager_info_raw = cur.execute(
+        "SELECT id, amount, discord_user_id_b, discord_user_id_a FROM wagers WHERE discord_user_id_b = ? OR discord_user_id_a = ? AND status = 'Pending'",
+        (user_id, user_id),
+    )
+
+    wager_info = wager_info_raw.fetchall()[0]
+    wager_id = wager_info[0]
+    wager_amount = wager_info[1]
+
+    if wager_info[2] == user_id:
+        user_id_b = wager_info[3]
+    else:
+        user_id_b = wager_info[2]
+
+    # make wager Ongoing
+    cur.execute("UPDATE wagers SET status = 'Ongoing' WHERE id = ?", (wager_id,))
+    con.commit()
+
+    wager_receipt = {"Name": user_id_b, "Amount": wager_amount}
+    return wager_receipt
 
 
 def bet_circumstance(con, cur, user_id_a, user_id_b, amount):
