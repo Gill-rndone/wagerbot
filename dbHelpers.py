@@ -83,6 +83,32 @@ def check_ongoing(con, cur, user_id):
             is_ongoing = True
 
 
+def wager_decline(con, cur, user_id):
+    # Grab info for the wager
+    user_id_b = 0
+    wager_info_raw = cur.execute(
+        "SELECT id, amount, discord_user_id_b, discord_user_id_a FROM wagers WHERE discord_user_id_b = ? OR discord_user_id_a = ? AND status = 'Pending'",
+        (user_id, user_id),
+    )
+
+    wager_info = wager_info_raw.fetchall()[0]
+    wager_id = wager_info[0]
+    wager_amount = wager_info[1]
+
+    # Make sure instigator can't be the one to decline the bet
+    if wager_info[2] == user_id:
+        user_id_b = wager_info[3]
+    else:
+        user_id_b = wager_info[2]
+
+    # make wager Declined
+    cur.execute("UPDATE wagers SET status = 'Declined' WHERE id = ?", (wager_id,))
+    con.commit()
+
+    wager_receipt = {"Name": user_id_b, "Amount": wager_amount}
+    return wager_receipt
+
+
 def wager_accept(con, cur, user_id):
 
     # Grab info for the wager

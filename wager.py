@@ -69,13 +69,27 @@ async def wager(interaction, member: discord.Member, amount: str):
             con, cur, interaction.user.id, member.id, int(amount), interaction.guild.id
         )
         await interaction.response.send_message(
-            f"{member.mention} , a wager of {amount} wager points has been offered to you... \n\nYour options are:\n `/decline` or `/accept` to reject or continue the wager.\n`/raise` (amount) to raise your wager by the input ammount.\n `/lower` (amount) to lower the wager by the input ammount (minimum must be greater than 0)"
+            f"{member.mention} , a wager of ${amount} has been offered to you... \n\nYour options are:\n `/decline` or `/accept` to reject or continue the wager.\n`/raise` (amount) to raise your wager by the input ammount.\n `/lower` (amount) to lower the wager by the input ammount (minimum must be greater than 0)"
         )
     else:
         await interaction.response.send_message(
-            f"Wager couldn't be processed, at least one of the users either have an insufficient balance or they're currently in a pending wager."
+            f"Wager couldn't be processed, at least one of the users either have an insufficient balance or they're currently in a pending/ongoing wager."
         )
 
+# decline a wager
+@tree.command(name="decline")
+async def decline(interaction):
+    currently_pending = dbHelpers.check_pending(con, cur, interaction.user.id)
+    user_name = interaction.user.name
+
+    if currently_pending:
+        # change status to declined 
+        wager_info = dbHelpers.wager_decline(con, cur, interaction.user.id)
+        await interaction.response.send_message(f"<@{wager_info["Name"]}>, your wager of ${wager_info["Amount"]} has been declined by {interaction.user.mention}.")
+    else:
+        await interaction.response.send_message(
+            f"{interaction.user.mention} , you currently don't have any pending wagers offered to you"
+        )
 
 # accept a wager
 @tree.command(name="accept")
@@ -84,14 +98,25 @@ async def accept(interaction):
     currently_pending = dbHelpers.check_pending(con, cur, interaction.user.id)
     user_name = interaction.user.name
 
-    if currently_pending == True:
+    if currently_pending:
         # TODO: change status to ongoing
         wager_info = dbHelpers.wager_accept(con, cur, interaction.user.id)
-        await interaction.response.send_message(f"<@{wager_info["Name"]}>, Your wager of {wager_info["Amount"]} wager points has been accepted")
+        await interaction.response.send_message(f"<@{wager_info["Name"]}>, Your wager of ${wager_info["Amount"]} has been accepted.\nThe `/declare_winner` command is now available to both users. Remember, you cannot declare yourself the winner.")
     else:
         await interaction.response.send_message(
             f"{interaction.user.mention} , you currently don't have any pending wagers offered to you"
         )
 
+# declare the wager winner and complete transaction. 
+@tree.command(name="declare_winner")
+async def accept(interaction):
+    currently_ongoing = dbHelpers.check_ongoing(con, cur, interaction.user.id)
+    if not currently_ongoing:
+        await interaction.response.send_message(f"{interaction.user.mention}, you're not currently in an ongoing wager.")
+    else:
+        # declare winner and transfer the funds
+        
+
 
 client.run(token, log_handler=handler, log_level=logging.DEBUG)
+
