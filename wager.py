@@ -69,7 +69,7 @@ async def wager(interaction, member: discord.Member, amount: str):
             con, cur, interaction.user.id, member.id, int(amount), interaction.guild.id
         )
         await interaction.response.send_message(
-            f"{member.mention} , a wager of ${amount} has been offered to you... \n\nYour options are:\n `/decline` or `/accept` to reject or continue the wager.\n`/raise` (amount) to raise your wager by the input ammount.\n `/lower` (amount) to lower the wager by the input ammount (minimum must be greater than 0)"
+            f"{member.mention} , a wager of ${amount} has been offered to you... \n\nYour options are:\n `/decline` or `/accept` to reject or continue the wager."
         )
     else:
         await interaction.response.send_message(
@@ -99,7 +99,7 @@ async def accept(interaction):
     user_name = interaction.user.name
 
     if currently_pending:
-        # TODO: change status to ongoing
+        # change status to ongoing
         wager_info = dbHelpers.wager_accept(con, cur, interaction.user.id)
         await interaction.response.send_message(f"<@{wager_info["Name"]}>, Your wager of ${wager_info["Amount"]} has been accepted.\nThe `/declare_winner` command is now available to both users. Remember, you cannot declare yourself the winner.")
     else:
@@ -109,12 +109,17 @@ async def accept(interaction):
 
 # declare the wager winner and complete transaction. 
 @tree.command(name="declare_winner")
-async def accept(interaction):
+async def accept(interaction, member: discord.Member):
     currently_ongoing = dbHelpers.check_ongoing(con, cur, interaction.user.id)
+
     if not currently_ongoing:
         await interaction.response.send_message(f"{interaction.user.mention}, you're not currently in an ongoing wager.")
     else:
-        # declare winner and transfer the funds
+        if interaction.user.id == member.id:
+            await interaction.response.send_message(f"{interaction.user.mention}, You cannot declare yourself the winner of a wager")
+        else:    
+            wager_amount = dbHelpers.declare_winner(con, cur, interaction.user.id, member.id)
+            await interaction.response.send_message(f"{interaction.user.mention}, your wager of ${wager_amount} has successfully been paid off to {member.mention}")
         
 
 

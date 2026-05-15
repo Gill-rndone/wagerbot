@@ -13,13 +13,10 @@ def profile_checker(con, cur, user_id, user_name):
     user_a_history = user_history.fetchall()
     if not user_a_history:
         base_balance = 1050
+        base_wins_losses = 0
         cur.execute(
-            "INSERT INTO users (discord_user_id, discord_user_name, balance) VALUES(?, ?, ?)",
-            (
-                user_id,
-                user_name,
-                base_balance,
-            ),
+            "INSERT INTO users (discord_user_id, discord_user_name, balance, wins, losses) VALUES(?, ?, ?, ?, ?)",
+            (user_id, user_name, base_balance, base_wins_losses, base_wins_losses),
         )
         con.commit()
         print(f"user {user_name} added and initialized to wager.db")
@@ -36,6 +33,39 @@ def profile_checker(con, cur, user_id, user_name):
             )
             con.commit()
             print(f"username updated for user {user_a_history}")
+
+
+def declare_winner(con, cur, user_id_loser, user_id_winner):
+    wager_info = cur.execute(
+        "SELECT id, amount FROM wagers WHERE discord_user_id_a = ? OR discord_user_id_b = ? AND status = 'Ongoing'",
+        (user_id_loser, user_id_loser),
+    ).fetchone()
+
+    wager_id = wager_info[0]
+    wager_amount = wager_info[1]
+
+    cur.execute(
+        "UPDATE users SET balance = balance + ?, wins = wins + 1 WHERE discord_user_id = ?",
+        (
+            wager_amount,
+            user_id_winner,
+        ),
+    )
+    con.commit()
+
+    cur.execute(
+        "UPDATE users SET balance = balance - ?, losses = losses + 1 WHERE discord_user_id = ?",
+        (wager_amount, user_id_loser),
+    )
+    con.commit()
+
+    cur.execute(
+        "UPDATE wagers SET winner_discord_user_id = ?, status = 'Resolved' WHERE id = ?",
+        (user_id_winner, wager_id),
+    )
+    con.commit()
+
+    return wager_amount
 
 
 # Open a wager proposition between two parties.
@@ -76,11 +106,13 @@ def check_ongoing(con, cur, user_id):
             user_id,
             user_id,
         ),
-    )
+    ).fetchall()
 
     for status in ongoing_bets:
         if status[0] == "Ongoing":
             is_ongoing = True
+
+    return is_ongoing
 
 
 def wager_decline(con, cur, user_id):
