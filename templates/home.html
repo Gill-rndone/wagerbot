@@ -1,27 +1,40 @@
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>wager.io</title>
-    <!-- bootstrap css -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-  </head>
-  <body>
-    <h1>!LANDING PAGE YIPPIE (WIP)!</h1>
-    <p>LOGO.jpeg</p>
+{% extends "layout.html" %}
+
+{% block title %}
+  Home
+{% endblock %}
+
+{% block main %}
+<div>
+  <h1>!LANDING PAGE YIPPIE (WIP)!</h1>
+</div>
+<div>
+  <p>LOGO.jpeg</p>
+</div>
     <div>
       <h2>top ten standings (balance)</h2>
-      <p>little blurb or something</p>
+      <table class="table">
+        <tr>
+         <thead>
+           <th scope="col">#</th>
+           <th scope="col">Username</th>
+           <th scope="col">Current balance</th>
+          </thead>
+        </tr>
+        <tbody>
+          {% for user in global_top_ten %}
+          <tr>
+            <td>{{ user["postition"] }}</td>
+            <td>{{ user["username"] }}</td>
+            <td>{{ user["balance"] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
     <div>
       <p>discord-logo.jpeg</p>
       <h3>link to bot invite (button on side)</h3>
       <p>words words words, instructions instructions instructions</p>
     </div>
-    <footer>
-     <p>Dwight Acol for cs50x</p> 
-    </footer>
-    <!-- bootstrap js -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-  </body>
-</html>
+{% endblock %}    
