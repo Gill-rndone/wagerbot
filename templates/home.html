@@ -16,15 +16,15 @@
       <table class="table">
         <tr>
          <thead>
-           <th scope="col">#</th>
+           <th scope="col">Position</th>
            <th scope="col">Username</th>
            <th scope="col">Current balance</th>
           </thead>
         </tr>
         <tbody>
-          {% for user in global_top_ten %}
+          {% for user in global_top_five %}
           <tr>
-            <td>{{ user["postition"] }}</td>
+            <td>{{ user["position"] }}</td>
             <td>{{ user["username"] }}</td>
             <td>{{ user["balance"] }}</td>
           </tr>

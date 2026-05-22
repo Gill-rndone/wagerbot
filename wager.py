@@ -7,6 +7,7 @@ import sqlite3
 import os
 from dbinit import init_db
 import dbHelpers
+import secrets
 
 load_dotenv()
 
@@ -76,6 +77,7 @@ async def wager(interaction, member: discord.Member, amount: str):
             f"Wager couldn't be processed, at least one of the users either have an insufficient balance or they're currently in a pending/ongoing wager."
         )
 
+
 # decline a wager
 @tree.command(name="decline")
 async def decline(interaction):
@@ -83,13 +85,16 @@ async def decline(interaction):
     user_name = interaction.user.name
 
     if currently_pending:
-        # change status to declined 
+        # change status to declined
         wager_info = dbHelpers.wager_decline(con, cur, interaction.user.id)
-        await interaction.response.send_message(f"<@{wager_info["Name"]}>, your wager of ${wager_info["Amount"]} has been declined by {interaction.user.mention}.")
+        await interaction.response.send_message(
+            f"<@{wager_info['Name']}>, your wager of ${wager_info['Amount']} has been declined by {interaction.user.mention}."
+        )
     else:
         await interaction.response.send_message(
             f"{interaction.user.mention} , you currently don't have any pending wagers offered to you"
         )
+
 
 # accept a wager
 @tree.command(name="accept")
@@ -101,27 +106,36 @@ async def accept(interaction):
     if currently_pending:
         # change status to ongoing
         wager_info = dbHelpers.wager_accept(con, cur, interaction.user.id)
-        await interaction.response.send_message(f"<@{wager_info["Name"]}>, Your wager of ${wager_info["Amount"]} has been accepted.\nThe `/declare_winner` command is now available to both users. Remember, you cannot declare yourself the winner.")
+        await interaction.response.send_message(
+            f"<@{wager_info['Name']}>, Your wager of ${wager_info['Amount']} has been accepted.\nThe `/declare_winner` command is now available to both users. Remember, you cannot declare yourself the winner."
+        )
     else:
         await interaction.response.send_message(
             f"{interaction.user.mention} , you currently don't have any pending wagers offered to you"
         )
 
-# declare the wager winner and complete transaction. 
+
+# declare the wager winner and complete transaction.
 @tree.command(name="declare_winner")
 async def accept(interaction, member: discord.Member):
     currently_ongoing = dbHelpers.check_ongoing(con, cur, interaction.user.id)
 
     if not currently_ongoing:
-        await interaction.response.send_message(f"{interaction.user.mention}, you're not currently in an ongoing wager.")
+        await interaction.response.send_message(
+            f"{interaction.user.mention}, you're not currently in an ongoing wager."
+        )
     else:
         if interaction.user.id == member.id:
-            await interaction.response.send_message(f"{interaction.user.mention}, You cannot declare yourself the winner of a wager")
-        else:    
-            wager_amount = dbHelpers.declare_winner(con, cur, interaction.user.id, member.id)
-            await interaction.response.send_message(f"{interaction.user.mention}, your wager of ${wager_amount} has successfully been paid off to {member.mention}")
-        
+            await interaction.response.send_message(
+                f"{interaction.user.mention}, You cannot declare yourself the winner of a wager"
+            )
+        else:
+            wager_amount = dbHelpers.declare_winner(
+                con, cur, interaction.user.id, member.id
+            )
+            await interaction.response.send_message(
+                f"{interaction.user.mention}, your wager of ${wager_amount} has successfully been paid off to {member.mention}"
+            )
 
 
 client.run(token, log_handler=handler, log_level=logging.DEBUG)
-

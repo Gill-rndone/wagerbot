@@ -13,5 +13,7 @@ CREATE TABLE "users"(
 "discord_user_name" TEXT,
 "balance" INTEGER,
 "wins" INTEGER,
-"losses" INTEGER
+"losses" INTEGER,
+"token" INTEGER NOT NULL
 );
+
