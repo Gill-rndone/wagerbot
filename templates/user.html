@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  User info
+{% endblock %}
+
+{% block main %}
+<div>
+  <h2> {{ user["username"] }} </h2>
+  <div>
+    <table class="table">
+        <tr>
+         <thead>
+           <th scope="col">Balance</th>
+           <th scope="col">Wins</th>
+           <th scope="col">Losses</th>
+          </thead>
+        </tr>
+        <tbody>
+          <tr>
+            <td>{{ user["balance"] }}</td>
+            <td>{{ user["wins"] }}</td>
+            <td>{{ user["losses"] }}</td>
+          </tr>
+        </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}    

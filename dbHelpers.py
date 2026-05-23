@@ -1,4 +1,3 @@
-import sqlite3
 import secrets
 
 
@@ -235,3 +234,22 @@ def bet_circumstance(con, cur, user_id_a, user_id_b, amount):
             validity = False
 
     return validity
+
+
+def get_basic(con, cur, token):
+    basic_info_raw = cur.execute(
+        "SELECT discord_user_name, balance, wins, losses FROM users WHERE token = ?",
+        (token,),
+    ).fetchall()
+    if not basic_info_raw:
+        return None
+    else:
+        basic_info = basic_info_raw[0]
+        balance_formatted = f"${basic_info[1]}"
+        info_dict = {
+            "username": basic_info[0],
+            "balance": balance_formatted,
+            "wins": basic_info[2],
+            "losses": basic_info[3],
+        }
+        return info_dict

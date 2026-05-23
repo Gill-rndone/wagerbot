@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
 import dbHelpers
 import sqlite3
 
@@ -19,3 +19,11 @@ def home():
 
 
 # TODO: create users page
+@app.route("/user/<token>")
+def user(token):
+    user_basic_info = dbHelpers.get_basic(con, cur, token)
+    print(user_basic_info)
+    if not user_basic_info:
+        return redirect("/")
+    else:
+        return render_template("user.html", user=user_basic_info)
