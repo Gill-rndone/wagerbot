@@ -8,12 +8,18 @@ CREATE TABLE "wagers"(
 "status" TEXT
 );
 
+CREATE TABLE "servers"(
+"discord_server_id" INTEGER UNIQUE NOT NULL,
+"discord_server_name" TEXT NOT NULL,
+"token" TEXT NOT NULL
+);
+
 CREATE TABLE "users"(
 "discord_user_id" INTEGER NOT NULL PRIMARY KEY,
 "discord_user_name" TEXT,
 "balance" INTEGER,
 "wins" INTEGER,
 "losses" INTEGER,
-"token" INTEGER NOT NULL
+"token" TEXT NOT NULL
 );
 

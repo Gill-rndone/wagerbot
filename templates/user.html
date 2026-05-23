@@ -25,5 +25,28 @@
         </tbody>
     </table>
   </div>
+  <h3> Wager History </h3>
+  <div>
+    <table class="table">
+      <tr>
+        <thead>
+          <th scope="col">Server</th>
+          <th scope="col">Opponent</th>
+          <th scope="col">Wager</th>
+          <th scope="col">Outcome</th>
+        </thead>
+      </tr>
+      <tbody>
+        {% for wager in wagers %}
+        <tr>
+          <td>{{ wager["server"] }}</td>
+          <td>{{ wager["opponent"] }}</td>
+          <td>{{ wager["wager"] }}</td>
+          <td>{{ wager["outcome"] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}    

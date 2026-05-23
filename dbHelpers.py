@@ -1,12 +1,37 @@
 import secrets
 
 
+def server_checker(con, cur, server_id, server_name):
+    server_history = cur.execute(
+        "SELECT discord_server_name FROM servers WHERE discord_server_id = ?",
+        (server_id,),
+    ).fetchone()
+
+    if not server_history:
+        server_token = secrets.token_urlsafe(16)
+        cur.execute(
+            "INSERT INTO servers (discord_server_id, discord_server_name, token) VALUES(?, ?, ?)",
+            (server_id, server_name, server_token),
+        )
+        con.commit()
+        print(f"{server_name} has been added to wager.db")
+    else:
+        if server_history[0] != server_name:
+            cur.execute(
+                "UPDATE servers SET discord_server_name = ? WHERE discord_server_id = ?",
+                (server_name, server_id),
+            )
+            con.commit()
+            print(f"{server_name} has had it's username updated")
+        else:
+            print(f"{server_name} already in wager.db")
+
+
 # Check if user exists in db and initialize if they don't
 def profile_checker(con, cur, user_id, user_name):
     # query for if user exists in db
     user_history = cur.execute(
-        "SELECT discord_user_name FROM users WHERE discord_user_id = ? ;",
-        (user_id,),
+        "SELECT discord_user_name FROM users WHERE discord_user_id = ? ;", (user_id,)
     )
 
     # Initialize user profile in wager.db if not already in there.
@@ -233,6 +258,10 @@ def bet_circumstance(con, cur, user_id_a, user_id_b, amount):
         if balance[0] < amount:
             validity = False
 
+    # also forgot to check fo this
+    if user_id_a == user_id_b:
+        validity = False
+
     return validity
 
 
@@ -253,3 +282,7 @@ def get_basic(con, cur, token):
             "losses": basic_info[3],
         }
         return info_dict
+
+
+def grab_history(con, cur, username):
+    history = cur.execute("SELECT * FROM wagers")
