@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, request
 import dbHelpers
 import sqlite3
 
@@ -25,7 +25,7 @@ def user(token):
     user_basic_info = dbHelpers.get_basic(con, cur, token)
     print(user_basic_info)
     if not user_basic_info:
-        return redirect("/")
+        return redirect("/404")
     else:
         # TODO: grab full player history (output list of dictionaies formatted {"server": ,"opponent": ,"wager": ,"outcome": })
         wager_history = dbHelpers.grab_history(con, cur, user_basic_info["username"])
@@ -41,3 +41,11 @@ def user(token):
             {"server": "boo", "opponent": "boo_man", "wager": "$boo", "outcome": "win"},
         ]
         return render_template("user.html", user=user_basic_info, wagers=test_history)
+
+
+@app.route("/404", methods=["GET", "POST"])
+def not_found():
+    if request.method == "GET":
+        return render_template("404.html")
+    else:
+        return redirect("/")
