@@ -40,7 +40,7 @@ def user(token):
             },
             {"server": "boo", "opponent": "boo_man", "wager": "$boo", "outcome": "win"},
         ]
-        return render_template("user.html", user=user_basic_info, wagers=test_history)
+        return render_template("user.html", user=user_basic_info, wagers=wager_history)
 
 
 @app.route("/404", methods=["GET", "POST"])

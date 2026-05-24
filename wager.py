@@ -64,7 +64,7 @@ async def wager(interaction, member: discord.Member, amount: str):
     )
 
     # initialize wager
-    if valid_circumstance == True:
+    if valid_circumstance:
         # user 'a' will always be instigator (instigator cannot use /accept command)
         dbHelpers.wager_open(
             con, cur, interaction.user.id, member.id, int(amount), interaction.guild.id
@@ -74,7 +74,7 @@ async def wager(interaction, member: discord.Member, amount: str):
         )
     else:
         await interaction.response.send_message(
-            f"Wager couldn't be processed, at least one of the users either have an insufficient balance, you've input yourself, or they're currently in a pending/ongoing wager."
+            "Wager couldn't be processed, at least one of the users either have an insufficient balance, you've input yourself, or they're currently in a pending/ongoing wager."
         )
 
 
@@ -82,7 +82,6 @@ async def wager(interaction, member: discord.Member, amount: str):
 @tree.command(name="decline")
 async def decline(interaction):
     currently_pending = dbHelpers.check_pending(con, cur, interaction.user.id)
-    user_name = interaction.user.name
 
     if currently_pending:
         # change status to declined
@@ -101,7 +100,6 @@ async def decline(interaction):
 async def accept(interaction):
     # check if user has a currently pending wager
     currently_pending = dbHelpers.check_pending(con, cur, interaction.user.id)
-    user_name = interaction.user.name
 
     if currently_pending:
         # change status to ongoing
@@ -117,7 +115,7 @@ async def accept(interaction):
 
 # declare the wager winner and complete transaction.
 @tree.command(name="declare_winner")
-async def accept(interaction, member: discord.Member):
+async def declare_winner(interaction, member: discord.Member):
     currently_ongoing = dbHelpers.check_ongoing(con, cur, interaction.user.id)
 
     # fix: forgot to add this earlier leading to the ability to send money to anyone

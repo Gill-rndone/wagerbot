@@ -285,4 +285,58 @@ def get_basic(con, cur, token):
 
 
 def grab_history(con, cur, username):
-    history = cur.execute("SELECT * FROM wagers")
+    # grab user_id
+    user_id = cur.execute(
+        "SELECT discord_user_id FROM users WHERE discord_user_name = ?", (username,)
+    ).fetchone()[0]
+
+    profile_checker(con, cur, user_id, username)
+
+    # grab all resolved wagers the user has been apart of
+    history = cur.execute(
+        "SELECT discord_server_id, amount, discord_user_id_a, discord_user_id_b, winner_discord_user_id FROM wagers WHERE status = 'Resolved' AND discord_user_id_a = ? OR discord_user_id_b = ?",
+        (user_id, user_id),
+    ).fetchall()
+
+    # construct list of dictionaries including the necessary data from history
+    history_dict = []
+    for index, wager_index in enumerate(history):
+        server_id = wager_index[0]
+        wager = wager_index[1]
+        user_a_id = wager_index[2]
+        user_b_id = wager_index[3]
+        winner_id = wager_index[4]
+        server = cur.execute(
+            "SELECT discord_server_name FROM servers WHERE discord_server_id = ?",
+            (server_id,),
+        ).fetchone()[0]
+
+        opponent_id = 0
+
+        if user_id == user_a_id:
+            opponent_id = user_b_id
+        else:
+            opponent_id = user_a_id
+        opponent = cur.execute(
+            "SELECT discord_user_name FROM users WHERE discord_user_id = ?",
+            (opponent_id,),
+        ).fetchone()[0]
+
+        wager_formatted = f"${wager}"
+
+        outcome = None
+        if winner_id == user_id:
+            outcome = "Win"
+        else:
+            outcome = "Loss"
+
+        wager_row = {
+            "server": server,
+            "opponent": opponent,
+            "wager": wager_formatted,
+            "outcome": outcome,
+        }
+        print(f"wager {index + 1} accounted for: {wager_row}")
+        history_dict.append(wager_row)
+
+    return history_dict
