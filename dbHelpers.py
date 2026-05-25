@@ -265,7 +265,7 @@ def bet_circumstance(con, cur, user_id_a, user_id_b, amount):
     return validity
 
 
-def get_basic(con, cur, token):
+def get_basic(cur, token):
     basic_info_raw = cur.execute(
         "SELECT discord_user_name, balance, wins, losses FROM users WHERE token = ?",
         (token,),
@@ -340,3 +340,10 @@ def grab_history(con, cur, username):
         history_dict.append(wager_row)
 
     return history_dict
+
+
+def grab_token(con, cur, user_id):
+    token = cur.execute(
+        "SELECT token FROM users WHERE discord_user_id = ?", (user_id,)
+    ).fetchone()[0]
+    return token

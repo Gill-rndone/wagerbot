@@ -22,7 +22,7 @@ def home():
 @app.route("/user/<token>")
 def user(token):
     # grab balance record and username
-    user_basic_info = dbHelpers.get_basic(con, cur, token)
+    user_basic_info = dbHelpers.get_basic(cur, token)
     print(user_basic_info)
     if not user_basic_info:
         return redirect("/404")
@@ -30,16 +30,6 @@ def user(token):
         # TODO: grab full player history (output list of dictionaies formatted {"server": ,"opponent": ,"wager": ,"outcome": })
         wager_history = dbHelpers.grab_history(con, cur, user_basic_info["username"])
 
-        # TESTING ONLY (REMEMBER TO REMOVE)
-        test_history = [
-            {
-                "server": "foo",
-                "opponent": "foo_man",
-                "wager": "$foo",
-                "outcome": "loss",
-            },
-            {"server": "boo", "opponent": "boo_man", "wager": "$boo", "outcome": "win"},
-        ]
         return render_template("user.html", user=user_basic_info, wagers=wager_history)
 
 

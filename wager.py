@@ -70,7 +70,7 @@ async def wager(interaction, member: discord.Member, amount: str):
             con, cur, interaction.user.id, member.id, int(amount), interaction.guild.id
         )
         await interaction.response.send_message(
-            f"{member.mention} , a wager of ${amount} has been offered to you... \n\nYour options are:\n `/decline` or `/accept` to reject or continue the wager."
+            f"{member.mention} , a wager of **${amount}** has been offered to you... \n\nYour options are:\n `/decline` or `/accept` to reject or continue the wager."
         )
     else:
         await interaction.response.send_message(
@@ -139,5 +139,23 @@ async def declare_winner(interaction, member: discord.Member):
                 f"{interaction.user.mention}, your wager of ${wager_amount} has successfully been paid off to {member.mention}"
             )
 
+@tree.command(name="user_info")
+async def user_info(interaction):
+    dbHelpers.profile_checker(con, cur, interaction.user.id, interaction.user.name)
+    # grab token
+    url_token = dbHelpers.grab_token(con, cur, interaction.user.id)
+
+    # make sure to change
+    local_test = "http://127.0.0.1:5000"
+    deploy = "https://wagerbot.ca"
+    user_link = f"{local_test}/user/{url_token}"
+
+    basic_info = dbHelpers.get_basic(cur, url_token)
+
+    overview = f"## Acount Info\n**Account Balance:** {basic_info["balance"]}\n**Wins:** {basic_info["wins"]}\n**Losses:** {basic_info["losses"]}\n"
+
+    print(f"generated link: {user_link}")
+     
+    await interaction.response.send_message(f"{overview}\nFor more info click [**Here**]({user_link})") 
 
 client.run(token, log_handler=handler, log_level=logging.DEBUG)
