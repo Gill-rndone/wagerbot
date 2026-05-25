@@ -1,3 +1,13 @@
 .footer {
-  margin-top: auto;
+  display: flex;
+  height: 10vh;
+  width: 100%;
+  margin-top: 3rem;
+  background-color: #516791;
+  overflow: auto;
 }
+
+body {
+  background-color: #808080;
+}
+

@@ -5,14 +5,15 @@
 {% endblock %}
 
 {% block main %}
-<div>
-  <h1>!LANDING PAGE YIPPIE (WIP)!</h1>
+<div class="text-center mx-auto p-1" style="margin-top: 1rem;">
+  <!-- remember to add in art after -->
+  <p>LOGO.jpeg (placeholder)</p>
+  <h1>Welcome To Wagerbot</h1>  
+  <h5>The bot for handeling bets between "friends"</h5>
 </div>
-<div>
-  <p>LOGO.jpeg</p>
-</div>
-    <div>
-      <h2>top ten standings (balance)</h2>
+    <div class="card mx-auto text-center p-4" style="width: 80vh; margin-bottom: 1rem; margin-top: 5rem;">
+      <h3>Global Top Five Standings</h3>
+      <p>Standings based on account balance</p>
       <table class="table">
         <tr>
          <thead>
@@ -32,9 +33,30 @@
         </tbody>
       </table>
     </div>
-    <div>
-      <p>discord-logo.jpeg</p>
-      <h3>link to bot invite (button on side)</h3>
-      <p>words words words, instructions instructions instructions</p>
+    <div class="container-fluid">
+      <div class="mx-auto text-center">
+        <h4 class="mx-auto">Info and commands</h4>
+        <p>the quick brown something something died</p>
+        <!-- Complete the info accordion -->
+        <div class="accordion" style="margin-bottom: 3rem;">
+          <div class="accordion-item">
+            <h2 class="accordion-header command-display">
+              <button class="accordion-button command-display" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">/wager</button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show">
+              <div class="accordion-body">
+                <strong>Offers a wager to a user of your choice.</strong> All you need to do is input <code>@member</code> and <code>amount</code>              
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card mx-auto" style="width: 19rem;">
+        <div class="card-body mx-auto text-center">
+          <img src="/static/discord.png" class="rounded mx-auto d-block" alt="discord-logo" style="height: 99px">
+          <h4 class="card-title mx-auto">Click below to invite Wagerbot</h5>
+          <a class="btn btn-primary btn-lg mx-auto" href="https://discord.com/oauth1/authorize?client_id=1501280462662799582" role="button" >Invite</a>
+        </div>
+      </div>
     </div>
 {% endblock %}    

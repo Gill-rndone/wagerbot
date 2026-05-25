@@ -18,7 +18,7 @@ def home():
     return render_template("home.html", global_top_five=global_top_five)
 
 
-# TODO: create users page
+# create users page
 @app.route("/user/<token>")
 def user(token):
     # grab balance record and username
@@ -27,7 +27,7 @@ def user(token):
     if not user_basic_info:
         return redirect("/404")
     else:
-        # TODO: grab full player history (output list of dictionaies formatted {"server": ,"opponent": ,"wager": ,"outcome": })
+        # grab full player history (output list of dictionaies formated {"server": ,"opponent": ,"wager": ,"outcome": })
         wager_history = dbHelpers.grab_history(con, cur, user_basic_info["username"])
 
         return render_template("user.html", user=user_basic_info, wagers=wager_history)
