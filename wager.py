@@ -70,13 +70,21 @@ async def wager(interaction, member: discord.Member, amount: str):
             con, cur, interaction.user.id, member.id, int(amount), interaction.guild.id
         )
         await interaction.response.send_message(
-            f"{member.mention} , a wager of **${amount}** has been offered to you... \n\nYour options are:\n `/decline` or `/accept` to reject or continue the wager."
+            f"{member.mention} , a wager of **${amount}** has been offered to you... \n\nYour options are:\n `/decline` or `/accept` to reject or continue the wager.\n{interaction.user.mention}, you can use the command `/cancel` to cancel a wager before it's been accepted."
         )
     else:
         await interaction.response.send_message(
             "Wager couldn't be processed, at least one of the users either have an insufficient balance, you've input yourself, or they're currently in a pending/ongoing wager."
         )
 
+@tree.comman(name="cancel")
+async def cancel(interaction):
+    currently_pending = dbHelpers.check_pending(con, cur, interaction.user.id)
+    
+    # TODO: Complete this 
+    if currently_pending:
+        # TODO function that sets wager status to canceled and returns the opponent user name
+        await interaction.response.send_message(f"your wager to {target} has been canceled.")
 
 # decline a wager
 @tree.command(name="decline")
