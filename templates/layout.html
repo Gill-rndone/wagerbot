@@ -3,24 +3,32 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="/static/styles.css"
+    <link rel="stylesheet" href="/static/styles.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>wagerbot</title>
     <!-- bootstrap css -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <!-- Adobe Fonts -->
+    <link rel="stylesheet" href="https://use.typekit.net/bok3dlm.css"> 
   </head>
   <body>
-    <nav class="navbar navbar-dark bg-dark">
+    <nav class="navbar navbar-dark bg-dark" style="color: #7289da;">
       <div>
-        <a class="navbar-brand" href="/" style="padding-left: 3rem;">wagerbot</a>
+        <a class="navbar-brand wager" href="/" style="padding-left: 3rem;">wagerbot</a>
       </div> 
+      <div>
+        <!-- TODO: when deployed, change href to github page-->
+        <a href="/" style="vertical-align: middle; padding-right: 3rem;" class="mx-auto">
+          <img src="/static/github.png" href="/" alt="github-logo" style="height: 5vh; vertical-align: middle;">
+        </a>
+      </div>
     </nav>
     <main>
       {% block main %}{% endblock %}
     </main>
     <div class="footer"> 
       <div style="display: table; text-align: center; margin-right: 2vh; margin-left: auto;">
-        <h5 style="display: table-cell; vertical-align: middle; color: #ffffff;" >Dwight Acol for CS50X</h5>
+        <h5 class="wager" style="display: table-cell; vertical-align: middle; color: #ffffff;" >Dwight Acol for CS50X</h5>
       </div>
     </div>
     <!-- bootstrap js -->

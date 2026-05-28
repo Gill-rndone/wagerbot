@@ -3,11 +3,52 @@
   height: 10vh;
   width: 100%;
   margin-top: 3rem;
-  background-color: #516791;
+  background-color: #1e2124;
   overflow: auto;
 }
 
+.wager {
+  font-family: mono45-headline, monospace !important; 
+  font-weight: 500 !important;
+  font-style: normal !important;
+}
+
+.gen {
+  font-family: "degular-mono", sans-serif !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+}
+
+dt {
+  margin-top: 3vh;
+  margin-bottom: 0px;
+}
+
 body {
-  background-color: #808080;
+  color: white !important;
+  background-color: #36393e !important;
+}
+
+.card {
+  color: white !important;
+  background-color: #424549 !important;
+}
+table {
+  background-color: #2c3e50 !important;
+  color: white !important;
+}
+
+.table td, 
+.table th {
+  background-color: #424549 !important; 
+  color: white !important;            
+}
+
+
+code {
+  color: #7289da !important; 
+  font-family: "degular-mono", sans-serif !important;
+  font-weight: 700 !important;
+  font-style: normal !important;
 }
 

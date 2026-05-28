@@ -342,7 +342,7 @@ def grab_history(con, cur, username):
     return history_dict
 
 
-def grab_token(con, cur, user_id):
+def grab_token(cur, user_id):
     token = cur.execute(
         "SELECT token FROM users WHERE discord_user_id = ?", (user_id,)
     ).fetchone()[0]

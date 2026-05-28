@@ -33,7 +33,10 @@ async def on_ready():
 
 
 # open a wager
-@tree.command(name="wager")
+@tree.command(
+    name="wager",
+    description="Used to offer a wager someone (mandatory args are member and amount)",
+)
 async def wager(interaction, member: discord.Member, amount: str):
     # Check for existing user profiles and create ones where needed.
     dbHelpers.profile_checker(con, cur, interaction.user.id, interaction.user.name)
@@ -70,24 +73,19 @@ async def wager(interaction, member: discord.Member, amount: str):
             con, cur, interaction.user.id, member.id, int(amount), interaction.guild.id
         )
         await interaction.response.send_message(
-            f"{member.mention} , a wager of **${amount}** has been offered to you... \n\nYour options are:\n `/decline` or `/accept` to reject or continue the wager.\n{interaction.user.mention}, you can use the command `/cancel` to cancel a wager before it's been accepted."
+            f"{member.mention} , a wager of **${amount}** has been offered to you... \n\nYour options are:\n `/decline` or `/accept` to reject or continue the wager.\n{interaction.user.mention}, you can also use the command `/decline` to cancel a wager before it's been accepted."
         )
     else:
         await interaction.response.send_message(
             "Wager couldn't be processed, at least one of the users either have an insufficient balance, you've input yourself, or they're currently in a pending/ongoing wager."
         )
 
-@tree.comman(name="cancel")
-async def cancel(interaction):
-    currently_pending = dbHelpers.check_pending(con, cur, interaction.user.id)
-    
-    # TODO: Complete this 
-    if currently_pending:
-        # TODO function that sets wager status to canceled and returns the opponent user name
-        await interaction.response.send_message(f"your wager to {target} has been canceled.")
 
 # decline a wager
-@tree.command(name="decline")
+@tree.command(
+    name="decline",
+    description="decline or cancel wager",
+)
 async def decline(interaction):
     currently_pending = dbHelpers.check_pending(con, cur, interaction.user.id)
 
@@ -104,7 +102,10 @@ async def decline(interaction):
 
 
 # accept a wager
-@tree.command(name="accept")
+@tree.command(
+    name="accept",
+    description="accept wager",
+)
 async def accept(interaction):
     # check if user has a currently pending wager
     currently_pending = dbHelpers.check_pending(con, cur, interaction.user.id)
@@ -122,7 +123,10 @@ async def accept(interaction):
 
 
 # declare the wager winner and complete transaction.
-@tree.command(name="declare_winner")
+@tree.command(
+    name="declare_winner",
+    description="declare opponent as winner",
+)
 async def declare_winner(interaction, member: discord.Member):
     currently_ongoing = dbHelpers.check_ongoing(con, cur, interaction.user.id)
 
@@ -147,11 +151,12 @@ async def declare_winner(interaction, member: discord.Member):
                 f"{interaction.user.mention}, your wager of ${wager_amount} has successfully been paid off to {member.mention}"
             )
 
-@tree.command(name="user_info")
+
+@tree.command(name="user_info", description="Display user info and link to user page")
 async def user_info(interaction):
     dbHelpers.profile_checker(con, cur, interaction.user.id, interaction.user.name)
     # grab token
-    url_token = dbHelpers.grab_token(con, cur, interaction.user.id)
+    url_token = dbHelpers.grab_token(cur, interaction.user.id)
 
     # make sure to change
     local_test = "http://127.0.0.1:5000"
@@ -160,10 +165,13 @@ async def user_info(interaction):
 
     basic_info = dbHelpers.get_basic(cur, url_token)
 
-    overview = f"## Acount Info\n**Account Balance:** {basic_info["balance"]}\n**Wins:** {basic_info["wins"]}\n**Losses:** {basic_info["losses"]}\n"
+    overview = f"## Acount Info\n**Account Balance:** {basic_info['balance']}\n**Wins:** {basic_info['wins']}\n**Losses:** {basic_info['losses']}\n"
 
     print(f"generated link: {user_link}")
-     
-    await interaction.response.send_message(f"{overview}\nFor more info click [**Here**]({user_link})") 
+
+    await interaction.response.send_message(
+        f"{overview}\nFor more info click [**Here**]({user_link})"
+    )
+
 
 client.run(token, log_handler=handler, log_level=logging.DEBUG)
