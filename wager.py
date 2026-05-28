@@ -7,7 +7,6 @@ import sqlite3
 import os
 from dbinit import init_db
 import dbHelpers
-import secrets
 
 load_dotenv()
 
@@ -87,7 +86,7 @@ async def wager(interaction, member: discord.Member, amount: str):
     description="decline or cancel wager",
 )
 async def decline(interaction):
-    currently_pending = dbHelpers.check_pending(con, cur, interaction.user.id)
+    currently_pending = dbHelpers.check_pending(cur, interaction.user.id)
 
     if currently_pending:
         # change status to declined
@@ -96,9 +95,15 @@ async def decline(interaction):
             f"<@{wager_info['Name']}>, your wager of ${wager_info['Amount']} has been declined by {interaction.user.mention}."
         )
     else:
-        await interaction.response.send_message(
-            f"{interaction.user.mention} , you currently don't have any pending wagers offered to you"
-        )
+        if dbHelpers.check_pending_offered(cur, interaction.user.id):
+            wager_info = dbHelpers.wager_decline(con, cur, interaction.user.id)
+            await interaction.response.send_message(
+                f"<@{wager_info['Name']}>, your wager of ${wager_info['Amount']} has been cancelled."
+            )
+        else:
+            await interaction.response.send_message(
+                f"{interaction.user.mention} , you currently don't have any pending wagers offered to you"
+            )
 
 
 # accept a wager
@@ -108,7 +113,7 @@ async def decline(interaction):
 )
 async def accept(interaction):
     # check if user has a currently pending wager
-    currently_pending = dbHelpers.check_pending(con, cur, interaction.user.id)
+    currently_pending = dbHelpers.check_pending(cur, interaction.user.id)
 
     if currently_pending:
         # change status to ongoing
@@ -128,11 +133,11 @@ async def accept(interaction):
     description="declare opponent as winner",
 )
 async def declare_winner(interaction, member: discord.Member):
-    currently_ongoing = dbHelpers.check_ongoing(con, cur, interaction.user.id)
+    currently_ongoing = dbHelpers.check_ongoing(cur, interaction.user.id)
 
     # fix: forgot to add this earlier leading to the ability to send money to anyone
     if currently_ongoing:
-        currently_ongoing = dbHelpers.check_ongoing(con, cur, member.id)
+        currently_ongoing = dbHelpers.check_ongoing(cur, member.id)
 
     if not currently_ongoing:
         await interaction.response.send_message(

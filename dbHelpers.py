@@ -129,7 +129,7 @@ def wager_open(con, cur, user_a, user_b, amount, server_id):
 
 
 # check if user has a pending bet OR if they've started the bet that they have pending
-def check_pending(con, cur, user_id):
+def check_pending(cur, user_id):
     is_pending = False
     pending_bets = cur.execute(
         "SELECT status FROM wagers WHERE discord_user_id_b = ?", (user_id,)
@@ -142,7 +142,20 @@ def check_pending(con, cur, user_id):
     return is_pending
 
 
-def check_ongoing(con, cur, user_id):
+def check_pending_offered(cur, user_id):
+    is_pending = False
+    pending_bets = cur.execute(
+        "SELECT status FROM wagers WHERE discord_user_id_a = ?", (user_id,)
+    )
+
+    for status in pending_bets:
+        if status[0] == "Pending":
+            is_pending = True
+
+    return is_pending
+
+
+def check_ongoing(cur, user_id):
     is_ongoing = False
     ongoing_bets = cur.execute(
         "SELECT status FROM wagers WHERE discord_user_id_a = ? OR discord_user_id_b = ?",
@@ -162,14 +175,15 @@ def check_ongoing(con, cur, user_id):
 def wager_decline(con, cur, user_id):
     # Grab info for the wager
     user_id_b = 0
-    wager_info_raw = cur.execute(
+    wager_info = cur.execute(
         "SELECT id, amount, discord_user_id_b, discord_user_id_a FROM wagers WHERE discord_user_id_b = ? OR discord_user_id_a = ? AND status = 'Pending'",
         (user_id, user_id),
-    )
+    ).fetchall()[0]
 
-    wager_info = wager_info_raw.fetchall()[0]
     wager_id = wager_info[0]
     wager_amount = wager_info[1]
+
+    print(f"decling wager of id: {wager_id}")
 
     # Make sure instigator can't be the one to decline the bet
     if wager_info[2] == user_id:
@@ -244,9 +258,9 @@ def bet_circumstance(con, cur, user_id_a, user_id_b, amount):
     # check if either user has a pending wager
     validity = True
 
-    if check_pending(con, cur, user_id_a) or check_ongoing(con, cur, user_id_a):
+    if check_pending(cur, user_id_a) or check_ongoing(cur, user_id_a):
         validity = False
-    if check_pending(con, cur, user_id_b) or check_ongoing(con, cur, user_id_b):
+    if check_pending(cur, user_id_b) or check_ongoing(cur, user_id_b):
         validity = False
 
     balances = cur.execute(
