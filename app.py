@@ -39,3 +39,6 @@ def not_found():
         return render_template("404.html")
     else:
         return redirect("/")
+
+if __name__ == '__main__':
+    app.run()
