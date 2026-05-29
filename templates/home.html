@@ -5,13 +5,13 @@
 {% endblock %}
 
 {% block main %}
-<div class="text-center mx-auto p-1" style="margin-top: 2rem; margin-bottom 0rem;">
+<div class="text-center mx-auto p-1" style="margin-top: 3rem; margin-bottom 5rem;">
   <!-- remember to add in art after -->
   <h1 class="wager">Welcome To Wagerbot</h1>  
   <h5 class="gen">The bot for handeling bets between "friends"</h5>
 </div>
-    <div class="card mx-auto text-center p-4" style="width: 100vh; margin-bottom: 5rem; margin-top: 2rem;">
-      <h3 class="wager">Global Top Five Standings</h3>
+    <div class="card mx-auto text-center p-4" style="margin-bottom: 5rem; margin-top: 2rem; margin-left: 5rem; margin-right: 5rem;">
+      <h3 class="wager">global top Five Standings</h3>
       <p class="gen">Standings based on account balance</p>
       <table class="table text-white gen">
         <tr>
@@ -34,10 +34,10 @@
     </div>
     <div class="container-fluid">
       <div class="mx-auto text-center">
-        <h4 class="mx-auto wager" style="margin-top: 1rem;">Info and commands</h4>
-        <p class="gen">Below is a quick rundown of the commands offered by Wagerbot</p>
-        <!-- TODO: Complete the info Card-->
-        <div class="card mx-auto text-left p-4" style="width: 100vh; margin-bottom: 5rem;">
+                <!-- TODO: Complete the info Card-->
+        <div class="card mx-auto text-left p-4" style="margin-bottom: 5rem; margin-left: 5rem; margin-right: 5rem;">
+          <h4 class="mx-auto wager" style="margin-top: 1rem;">Info and commands</h4>
+          <p class="gen">Below is a quick rundown of the commands offered by Wagerbot</p>
           <dl class="gen" style="text-align: left;">
             <dt><code>/wager</code></dt>
             <dd>Used to offer a wager someone (mandatory args are member and amount)</dd>
@@ -52,7 +52,7 @@
           </dl>
         </div>
       </div>
-      <div class="card mx-auto" style="width: 19rem;">
+      <div class="card mx-auto" style="margin-left: 5rem; margin-right: 5rem;">
         <div class="card-body mx-auto text-center">
           <img src="/static/discord.png" class="rounded mx-auto d-block" alt="discord-logo" style="height: 99px">
           <h4 class="card-title mx-auto wager">Get started with Wagerbot</h5>
