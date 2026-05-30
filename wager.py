@@ -166,7 +166,7 @@ async def user_info(interaction):
     # make sure to change
     local_test = "http://127.0.0.1:5000"
     deploy = "https://wagerbot.ca"
-    user_link = f"{local_test}/user/{url_token}"
+    user_link = f"{deploy}/user/{url_token}"
 
     basic_info = dbHelpers.get_basic(cur, url_token)
 
