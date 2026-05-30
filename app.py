@@ -33,12 +33,9 @@ def user(token):
         return render_template("user.html", user=user_basic_info, wagers=wager_history)
 
 
-@app.route("/404", methods=["GET", "POST"])
-def not_found():
-    if request.method == "GET":
-        return render_template("404.html")
-    else:
-        return redirect("/")
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 if __name__ == '__main__':
     app.run()
