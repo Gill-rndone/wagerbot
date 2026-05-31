@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  User info
+{% endblock %}
+
+{% block main %}
+<div style="min-height: 100vh;">
+  <h1 class="text-center wager" style="margin-top: 10vh; margin-bottom: 0vh;"> {{ user["username"] }} </h2>
+  <div class="card mx-auto text-center p-4" style="margin-bottom: 1rem; margin-top: 5rem; margin-left: 5rem; margin-right: 5rem;">
+    <h3 class="wager">Account Overview</h3>
+    <table class="table">
+        <tr>
+         <thead class="gen">
+           <th scope="col">Balance</th>
+           <th scope="col">Wins</th>
+           <th scope="col">Losses</th>
+          </thead>
+        </tr>
+        <tbody class="gen">
+          <tr>
+            <td>{{ user["balance"] }}</td>
+            <td>{{ user["wins"] }}</td>
+            <td>{{ user["losses"] }}</td>
+          </tr>
+        </tbody>
+    </table>
+    <p class="gen">Note: User balance defaults to $100 when it dips below that amount.</p>
+  </div>
+  <div class="card mx-auto" style="margin-left: 5rem; margin-right: 5rem;">
+        <div class="card-body mx-auto text-center">
+          <h4 class="card-title mx-auto wager">Current Wager</h5>
+          <!-- Place info for current wager in here -->
+          <strong class="wager mx-auto">Wager From {{ current_wager["opponent"] }}</strong>
+          <p class="gen"><strong class="wager mx-auto">AMOUNT: </strong>{{ current_wager["amount"] }}</p>
+          <p class="gen"><strong class="wager mx-auto">STATUS: </strong>{{ status }}</p>
+          <p class="gen"><strong class="wager mx-auto">Note: </strong>{{ current_wager["note"] }}</p>
+        </div>
+      </div>
+  <div class="card mx-auto text-center p-4" style="margin-bottom: 1rem; margin-top: 1rem; margin-left: 5rem; margin-right: 5rem;">
+  <h3 class="mx-auto text-center wager"> Wager History </h3>
+    <table class="table">
+      <tr>
+        <thead class="gen">
+          <th scope="col">Server</th>
+          <th scope="col">Opponent</th>
+          <th scope="col">Wager</th>
+          <th scope="col">Outcome</th>
+        </thead>
+      </tr>
+      <tbody class="gen">
+        {% for wager in wagers %}
+        <tr>
+          <td>{{ wager["server"] }}</td>
+          <td>{{ wager["opponent"] }}</td>
+          <td>{{ wager["wager"] }}</td>
+          <td>{{ wager["outcome"] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}    

@@ -29,13 +29,43 @@ def user(token):
     else:
         # grab full player history (output list of dictionaies formated {"server": ,"opponent": ,"wager": ,"outcome": })
         wager_history = dbHelpers.grab_history(con, cur, user_basic_info["username"])
+        user_id = dbHelpers.token_to_id(cur, token)
 
-        return render_template("user.html", user=user_basic_info, wagers=wager_history)
+        if (
+            dbHelpers.check_ongoing(cur, user_id)
+            or dbHelpers.check_pending(cur, user_id)
+            or dbHelpers.check_pending_offered(cur, user_id)
+        ):
+            current_wager = dbHelpers.current_wager(cur, user_id)
+
+            status = None
+
+            if dbHelpers.check_ongoing(cur, user_id):
+                status = "Ongoing"
+            else:
+                status = "Pending"
+
+            return render_template(
+                "user_wager.html",
+                user=user_basic_info,
+                wagers=wager_history,
+                current_wager=current_wager,
+                status=status,
+            )
+        else:
+            return render_template(
+                "user.html",
+                user=user_basic_info,
+                wagers=wager_history,
+            )
+
+    # TODO: also include currently pending/ongoing wager info
 
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('404.html'), 404
+    return render_template("404.html"), 404
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run()

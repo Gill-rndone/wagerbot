@@ -36,7 +36,7 @@ async def on_ready():
     name="wager",
     description="Used to offer a wager someone (mandatory args are member and amount)",
 )
-async def wager(interaction, member: discord.Member, amount: str):
+async def wager(interaction, member: discord.Member, amount: str, note: str):
     # Check for existing user profiles and create ones where needed.
     dbHelpers.profile_checker(con, cur, interaction.user.id, interaction.user.name)
     dbHelpers.profile_checker(con, cur, member.id, member.name)
@@ -65,14 +65,22 @@ async def wager(interaction, member: discord.Member, amount: str):
         con, cur, member.id, interaction.user.id, amount
     )
 
+    # TODO: make sure to include message and send it to message table
     # initialize wager
     if valid_circumstance:
         # user 'a' will always be instigator (instigator cannot use /accept command)
+        print(f"User submitted note of: {note}\n")
         dbHelpers.wager_open(
-            con, cur, interaction.user.id, member.id, int(amount), interaction.guild.id
+            con,
+            cur,
+            interaction.user.id,
+            member.id,
+            int(amount),
+            interaction.guild.id,
+            note,
         )
         await interaction.response.send_message(
-            f"{member.mention} , a wager of **${amount}** has been offered to you... \n\nYour options are:\n `/decline` or `/accept` to reject or continue the wager.\n{interaction.user.mention}, you can also use the command `/decline` to cancel a wager before it's been accepted."
+            f"{member.mention} , a wager of **${amount}** has been offered to you... \n\nYour options are:\n `/decline` or `/accept` to reject or continue the wager.\n{interaction.user.mention}, you can also use the command `/decline` to cancel a wager before it's been accepted.\n\nNOTE: {note}"
         )
     else:
         await interaction.response.send_message(
@@ -163,20 +171,47 @@ async def user_info(interaction):
     # grab token
     url_token = dbHelpers.grab_token(cur, interaction.user.id)
 
-    # make sure to change
+    # TODO: make sure to change before deployment
     local_test = "http://127.0.0.1:5000"
     deploy = "https://wagerbot.ca"
-    user_link = f"{deploy}/user/{url_token}"
+    user_link = f"{local_test}/user/{url_token}"
 
     basic_info = dbHelpers.get_basic(cur, url_token)
 
     overview = f"## Acount Info\n**Account Balance:** {basic_info['balance']}\n**Wins:** {basic_info['wins']}\n**Losses:** {basic_info['losses']}\n"
 
+    user_id = interaction.user.id
+    wager_line = None
+    has_wager = False
+
+    if (
+        dbHelpers.check_ongoing(cur, user_id)
+        or dbHelpers.check_pending(cur, user_id)
+        or dbHelpers.check_pending_offered(cur, user_id)
+    ):
+        current_wager = dbHelpers.current_wager(cur, user_id)
+
+        status = None
+
+        has_wager = True
+
+        if dbHelpers.check_ongoing(cur, user_id):
+            status = "Ongoing"
+        else:
+            status = "Pending"
+
+        wager_line = f"You have a current wager from {current_wager['opponent']}\n**Amount**: {current_wager['amount']}\n**Status**: {status}\n**Note**: {current_wager['note']}\n"
+
     print(f"generated link: {user_link}")
 
-    await interaction.response.send_message(
-        f"{overview}\nFor more info click [**Here**]({user_link})"
-    )
+    if has_wager:
+        await interaction.response.send_message(
+            f"{overview}\n{wager_line}\nFor more info click [**Here**]({user_link})"
+        )
+    else:
+        await interaction.response.send_message(
+            f"{overview}\nFor more info click [**Here**]({user_link})"
+        )
 
 
 client.run(token, log_handler=handler, log_level=logging.DEBUG)

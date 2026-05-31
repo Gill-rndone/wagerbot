@@ -113,7 +113,7 @@ def declare_winner(con, cur, user_id_loser, user_id_winner):
 
 
 # Open a wager proposition between two parties.
-def wager_open(con, cur, user_a, user_b, amount, server_id):
+def wager_open(con, cur, user_a, user_b, amount, server_id, message):
     default_status = "Pending"
     cur.execute(
         "INSERT INTO wagers (discord_user_id_a, discord_user_id_b, amount, discord_server_id, status) VALUES (?, ?, ?, ?, ?)",
@@ -124,6 +124,17 @@ def wager_open(con, cur, user_a, user_b, amount, server_id):
             server_id,
             default_status,
         ),
+    )
+    con.commit()
+
+    wager_id = cur.execute(
+        "SELECT id FROM wagers WHERE discord_user_id_a = ? AND discord_user_id_b = ? AND amount = ? AND discord_server_id = ? AND status = ?",
+        (user_a, user_b, amount, server_id, default_status),
+    ).fetchone()[0]
+
+    cur.execute(
+        "INSERT INTO messages (wager_id, message_content) VALUES (?, ?)",
+        (wager_id, message),
     )
     con.commit()
 
@@ -361,3 +372,46 @@ def grab_token(cur, user_id):
         "SELECT token FROM users WHERE discord_user_id = ?", (user_id,)
     ).fetchone()[0]
     return token
+
+
+def token_to_id(cur, token):
+    user_id = cur.execute(
+        "SELECT discord_user_id FROM users WHERE token = ?", (token,)
+    ).fetchone()[0]
+
+    return user_id
+
+
+def current_wager(cur, user_id):
+    wager_info = cur.execute(
+        "SELECT id, amount, discord_user_id_a, discord_user_id_b FROM wagers WHERE (status = 'Pending' OR status = 'Ongoing') AND (discord_user_id_a = ? OR discord_user_id_b = ?)",
+        (user_id, user_id),
+    ).fetchone()
+    # TODO: Format wager info into a dictionary.
+
+    wager_id = wager_info[0]
+    wager_amount = wager_info[1]
+    user_id_a = wager_info[2]
+    user_id_b = wager_info[3]
+
+    opponent_id = 0
+    if user_id == user_id_b:
+        opponent_id = user_id_a
+    else:
+        opponent_id = user_id_b
+
+    opponent_name = cur.execute(
+        "SELECT discord_user_name FROM users WHERE discord_user_id = ?", (opponent_id,)
+    ).fetchone()[0]
+
+    wager_message = cur.execute(
+        "SELECT message_content FROM messages WHERE wager_id = ?", (wager_id,)
+    ).fetchone()[0]
+
+    wager_info = {
+        "amount": f"${wager_amount}",
+        "note": wager_message,
+        "opponent": opponent_name,
+    }
+
+    return wager_info

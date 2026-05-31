@@ -23,3 +23,8 @@ CREATE TABLE "users"(
 "token" TEXT NOT NULL
 );
 
+CREATE TABLE "messages"(
+"wager_id" INTEGER NOT NULL PRIMARY KEY,
+"message_content" TEXT NOT NULL
+);
+
