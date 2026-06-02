@@ -205,13 +205,14 @@ async def user_info(interaction):
     print(f"generated link: {user_link}")
 
     if has_wager:
-        await interaction.response.send_message(
+        await interaction.user.send(
             f"{overview}\n{wager_line}\nFor more info click [**Here**]({user_link})"
         )
     else:
-        await interaction.response.send_message(
+        await interaction.user.send(
             f"{overview}\nFor more info click [**Here**]({user_link})"
         )
-
+    
+    await interaction.response.send_message(f"{interaction.user.mention}, Your info has been sent to your inbox.")
 
 client.run(token, log_handler=handler, log_level=logging.DEBUG)
