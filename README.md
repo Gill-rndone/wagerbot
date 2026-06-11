@@ -41,8 +41,22 @@ Holds all the HTML files used for wagerbot.ca. The website uses the Flask framew
 #### app.py 
 Backend for wagerbot.ca. It doesn't have many functions or a lot of code since all of the database handling is offloaded to `dbHelpers.py`. Below are all the routes:
 * `@app.route("/")`
-  Grabs the global top five using the `dbHelpers.global_top_five` method and returns it to the template `home.html`. You will notice from here on out that a lot of the methods take con and cur as an argument; this is originally due to the database being created and originally accessed in `wager.py`. I later realized I could've just accessed the database from `dbHelpers.py`, but when I tried to fix it, the database would be created without any tables. This has led me to revert to how it was created, and I continued to pass con and cur whenever necessary in any methods. 
+  Grabs the global top five using the `dbHelpers.global_top_five` method and returns it to the template `home.html`. You will notice from here on out that a lot of the methods take con and cur as arguments; this is originally due to the database being created and originally accessed in `wager.py`. I later realized I could've just accessed the database from `dbHelpers.py`, but when I tried to fix it, the database would be created without any tables. This has led me to revert to how it was created, and I continued to pass con and cur whenever necessary in any methods. 
 * `@app.route("/user/<token>")`
   Each user has a generated token to prevent the user_id from being displayed in the URL bar. When provided a link from wagerbot on Discord, the link will always be formatted as `/user/<token>`. This is to prevent others from being able to see your user history. If a token doesn't exist, the user will be redirected to the error page. If the token provided matches an existing user, the user's ID and wager history are both pulled. Then it checks whether or not the user has any pending or offered wagers and classifies them as such. Depending on whether the user has a pending/ongoing wager or not, `user_wager.html` or `user.html` will be rendered with the current information available.
 * `@app.errorhandler(404)`
   Just displays the `404.html` page when a route doesn't exist. 
+#### dbHelpers.py
+Where all of the reading and writing of `wager.db` occurs. It is the largest file in the project, and all the methods are very self-explanatory. I won't go into all of the methods one by one, but will describe them as we run into them when explaining the rest of the project. 
+#### dbinit.py
+A very simple script which runs when `wager.py` is run. All it does is check if a database exists; if not, create a database using the schema inside `wager-db.sql`. 
+#### requirements.txt
+Holds the requirements for this project to run in whichever environment it needs to be deployed in. Just run `pip install -r requirements.txt`.
+#### wager-db.sql
+This is the schema file for the database. Below are the tables:
+* **"wagers"** Holds the wager ID to identify a wager, the Discord server ID where the wager took place, the amount/value of said wager, both users' Discord user IDs (discord_user_id_a or discord_user_id_b), the Discord user ID of the winner, and the status.
+* **"servers"** holds the Discord server name and ID. It also holds the token for if I plan to create a server info page which displays server standings.
+* **"users"** holds the Discord user ID and username, their balance, wins, and losses, as well as the generated token which is used in `app.py`.
+* **"messages"** A late addition which holds the message created by the wager instigator and the corresponding wager ID.
+#### wager.py 
+The main Discord bot file. Outside of the basic boilerplate code, you may notice that it runs `init_db()` to create the database. For whatever reason, when setting up con and cursor in the `dbHelpers.py` file, the database would be initialized without a schema. If someone has a fix, please let me know. Besides that, below are how the commands handled for the wagerbot Discord app:
