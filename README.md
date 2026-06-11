@@ -11,12 +11,12 @@ When first using Wagerbot, a profile will be automatically created for you with 
 Used to offer a wager to someone (mandatory args are member, amount, and a note).
 * `/accept`
 Used by the person who has been offered the wager to accept and initiate the wager. Note: Once accepted, you can NOT cancel a wager.
-* `/decline`
+* `/decline.`
 Used by the person being offered the wager to decline said wager. It can also be used by the person who offered the wager to cancel the wager before it's been accepted.
 * `/declare_winner`
 Used to declare the winner of a wager and transfer the funds. You can NOT declare yourself the winner.
 * `/user_info`
-Used to display your account info, it will also provide a link that directs you to a webpage which displays your whole wager history. Note: You can find info for your current pending/ongoing wager.
+Used to display your account info; it will also provide a link that directs you to a webpage which displays your whole wager history. Note: You can find info for your current pending/ongoing wager.
 
 #### Webpage overview
 When visiting https://wagerbot.ca from a browser, you only have access to the homepage, which features a global top 5 leaderboard, the list of Discord commands, a button on the header that links to the project's GitHub page, and a button at the bottom to invite the bot to your server. When using the `/user_info` command, you'll be sent a link in your dm to a page only you may visit, which displays your account's balance, win count, and loss count. Additionally, if you're currently in a pending or ongoing wager, you will be shown information relating to the wager, which includes the amount, your opponent, and a note which the person who created the wager left.
@@ -29,3 +29,20 @@ I've personally chosen to use Python Anywhere for the deployment of this service
 #### Discord Bot
 Also running in Python Anywhere, first I had to create a .env file that held the Discord Token (I had pushed my token to GitHub by accident whilst learning how Discord bots work before). After that, it was as simple as writing a bash command that redirects me to my projects directory, enables the virtual environment, and runs `wagerbot.py`. With that command pasted into the Always-On Tasks section of Python Anywhere, Wagerbot was up and running. 
 
+## Source Code and Folders
+#### /Static
+Holds all the images used in wagerbot.ca and the stylesheet used for the HTML files. 
+#### /templates
+Holds all the HTML files used for wagerbot.ca. The website uses the Flask framework and Jinja, so all the files extend layout.html and all info is passed from app.py.
+* **404.html** Displayed when the user tries to access a non-existent page.
+* **layout.html** Holds the metadata, the navbar, and the footer. This website uses Bootstrap for the navbar and all the cards.
+* **user.html** Displays the user's basic info (balance, wins, losses) and displays the user's whole wager history.
+* **user_wager.html** Same as user.html but also provides a card which holds the information for a user's pending/ongoing wager (opponent, amount, note). App.py checks whether or not there's a pending/ongoing wager and chooses between user.html or user_wager.html to display the user's info.
+#### app.py 
+Backend for wagerbot.ca. It doesn't have many functions or a lot of code since all of the database handling is offloaded to `dbHelpers.py`. Below are all the routes:
+* `@app.route("/")`
+  Grabs the global top five using the `dbHelpers.global_top_five` method and returns it to the template `home.html`. You will notice from here on out that a lot of the methods take con and cur as an argument; this is originally due to the database being created and originally accessed in `wager.py`. I later realized I could've just accessed the database from `dbHelpers.py`, but when I tried to fix it, the database would be created without any tables. This has led me to revert to how it was created, and I continued to pass con and cur whenever necessary in any methods. 
+* `@app.route("/user/<token>")`
+  Each user has a generated token to prevent the user_id from being displayed in the URL bar. When provided a link from wagerbot on Discord, the link will always be formatted as `/user/<token>`. This is to prevent others from being able to see your user history. If a token doesn't exist, the user will be redirected to the error page. If the token provided matches an existing user, the user's ID and wager history are both pulled. Then it checks whether or not the user has any pending or offered wagers and classifies them as such. Depending on whether the user has a pending/ongoing wager or not, `user_wager.html` or `user.html` will be rendered with the current information available.
+* `@app.errorhandler(404)`
+  Just displays the `404.html` page when a route doesn't exist. 
