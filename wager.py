@@ -156,17 +156,18 @@ async def declare_winner(interaction, member: discord.Member):
             await interaction.response.send_message(
                 f"{interaction.user.mention}, You cannot declare yourself the winner of a wager"
             )
-        if else not dbHelpers.check_match(cur, interaction.user.id, member.id):
-            await interaction.response.send_message(
-                f"{interaction.user.mention}, You are currently not in a wager with this user."
-            ) 
         else:
-            wager_amount = dbHelpers.declare_winner(
-                con, cur, interaction.user.id, member.id
-            )
-            await interaction.response.send_message(
-                f"{interaction.user.mention}, your wager of ${wager_amount} has successfully been paid off to {member.mention}"
-            )
+            if not dbHelpers.check_match(cur, interaction.user.id, member.id):
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, You are currently not in a wager with this user."
+                )
+            else:
+                wager_amount = dbHelpers.declare_winner(
+                    con, cur, interaction.user.id, member.id
+                )
+                await interaction.response.send_message(
+                    f"{interaction.user.mention}, your wager of ${wager_amount} has successfully been paid off to {member.mention}"
+                )
 
 
 @tree.command(name="user_info", description="Display user info and link to user page")
@@ -216,7 +217,10 @@ async def user_info(interaction):
         await interaction.user.send(
             f"{overview}\nFor more info click [**Here**]({user_link})"
         )
-    
-    await interaction.response.send_message(f"{interaction.user.mention}, Your info has been sent to your inbox.")
+
+    await interaction.response.send_message(
+        f"{interaction.user.mention}, Your info has been sent to your inbox."
+    )
+
 
 client.run(token, log_handler=handler, log_level=logging.DEBUG)
