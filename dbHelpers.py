@@ -182,6 +182,17 @@ def check_ongoing(cur, user_id):
 
     return is_ongoing
 
+def check_match(cur, user_id_a, user_id_b):
+    is_match = False
+    ongoing_bets_a = cur.execute(
+            "SELECT id FROM wagers WHERE discord_user_id_a = ? or discord_user_id_b = ? AND status = 'Ongoing'", (user_id_a, user_id_a)).fetchone[0]
+    ongoing_bets_a = cur.execute(
+            "SELECT id FROM wagers WHERE discord_user_id_a = ? or discord_user_id_b = ? AND status = 'Ongoing'", (user_id_b, user_id_b)).fetchone[0]
+    if ongoing_bets_a == ongoing_bets_a:
+        is_match = True
+
+    return is_match
+
 
 def wager_decline(con, cur, user_id):
     # Grab info for the wager

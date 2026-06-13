@@ -156,6 +156,10 @@ async def declare_winner(interaction, member: discord.Member):
             await interaction.response.send_message(
                 f"{interaction.user.mention}, You cannot declare yourself the winner of a wager"
             )
+        if else not dbHelpers.check_match(cur, interaction.user.id, member.id):
+            await interaction.response.send_message(
+                f"{interaction.user.mention}, You are currently not in a wager with this user."
+            ) 
         else:
             wager_amount = dbHelpers.declare_winner(
                 con, cur, interaction.user.id, member.id
