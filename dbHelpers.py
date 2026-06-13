@@ -196,7 +196,7 @@ def wager_decline(con, cur, user_id):
 
     print(f"decling wager of id: {wager_id}")
 
-    # Make sure instigator can't be the one to decline the bet
+    # identify whether wager is being declined or cancelled
     if wager_info[2] == user_id:
         user_id_b = wager_info[3]
     else:
