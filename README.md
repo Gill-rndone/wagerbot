@@ -1,5 +1,5 @@
 # Wagerbot (README WIP)
-#### VIDEO: _Imagine a video link here_
+#### VIDEO: https://youtu.be/6NdPzwxJKzM?si=7UMcS1f102Prf8N1
 ## Overview
 Wagerbot is a Discord bot and website made to handle bets and wagers (with play money) between friends online. Say you want to bet your friend that you could beat them in a 1v1 in CS, or that your player will boot a penalty kick straight into the first row. Whatever it is, Wagerbot has you covered. 
 
